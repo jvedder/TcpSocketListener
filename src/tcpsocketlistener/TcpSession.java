@@ -1,3 +1,5 @@
+package tcpsocketlistener;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,11 +9,12 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Logger;
 
 public class TcpSession
 {
+    private static final Logger logger = Logger.getLogger(TcpSession.class.getName());
     public static final int BUFSIZE = 8192;
     private PushbackInputStream inputStream;
     private final OutputStream outputStream;
@@ -29,6 +32,8 @@ public class TcpSession
 
     public void execute() throws IOException
     {
+        logger.finer("ENTRY");
+
         try
         {
             // Read the first 8192 bytes.
@@ -43,56 +48,69 @@ public class TcpSession
             {
                 try
                 {
-                    System.out.println("read...");
+                    logger.info("Reading from Socket Stream");
                     read = inputStream.read(buf, 0, BUFSIZE - rlen);
                 }
                 catch (Exception e)
                 {
+                    logger.info("TcpSession Shutdown (general exception)");
+
                     safeClose(inputStream);
                     safeClose(outputStream);
                     throw new SocketException("TcpSession Shutdown");
                 }
                 if (read == -1)
                 {
+                    logger.info("TcpSession Shutdown (read == -1)");
+
                     // socket was been closed
                     safeClose(inputStream);
                     safeClose(outputStream);
                     throw new SocketException("TcpSession Shutdown");
                 }
-                rlen += read;
 
+                // rlen += read;
                 // TODO: Check for buf[] full (rlen >= BUFSIZE)
 
-                eol = findEndOfLine(buf, rlen);
-                if (eol > 0)
-                {
-                    if (eol < rlen) inputStream.unread(buf, eol, rlen - eol);
-                    String line = new String(buf, 0, eol, StandardCharsets.UTF_8);
-                    System.out.println(line);
-                    rlen = 0;
-                }
+                logger.info("Read " + read + " bytes.");
+                String line = new String(buf, 0, read, StandardCharsets.UTF_8);
+                System.out.println(line);
+
+                // eol = findEndOfLine(buf, rlen);
+                // if (eol > 0)
+                // {
+                // if (eol < rlen) inputStream.unread(buf, eol, rlen - eol);
+                // String line = new String(buf, 0, eol,
+                // StandardCharsets.UTF_8);
+                // System.out.println(line);
+                // rlen = 0;
+                // }
 
             }
 
         }
         catch (SocketException e)
         {
+            logger.warning("SocketException");
             // throw it out to close socket object (finalAccept)
             throw e;
         }
-        catch (SocketTimeoutException ste)
-        {
-            throw ste;
-        }
-        catch (IOException ioe)
-        {
-            System.out.println("IOException: " + ioe.getMessage());
-            safeClose(outputStream);
-        }
+        // catch (SocketTimeoutException ste)
+        // {
+        //     logger.warning("SocketTimeoutException (unreachable)");
+        //     safeClose(outputStream);        
+        //     throw ste;
+        // }
+        // catch (IOException ioe)
+        // {
+        //     logger.warning("IOException (unreachable)");
+        //     safeClose(outputStream);
+        // }
         finally
         {
-
+            logger.finer("EXIT");
         }
+
     }
 
     /**

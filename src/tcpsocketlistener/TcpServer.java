@@ -1,3 +1,5 @@
+package tcpsocketlistener;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -5,17 +7,22 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TcpServer
 {
+    private static final Logger logger = Logger.getLogger(TcpServer.class.getName());
     private final String hostname = null;
     private final int myPort = 30303;
     private ServerSocket myServerSocket;
     private Set<Socket> openConnections = new HashSet<Socket>();
     private Thread myThread;
-    
+    private long requestCount;
+
     /**
      * Start the server.
      *
@@ -24,8 +31,8 @@ public class TcpServer
      */
     public void start() throws IOException
     {
-        System.out.println("Server.start()");
-        
+        logger.finer("ENTRY");
+
         myServerSocket = new ServerSocket();
         myServerSocket
                 .bind((hostname != null) ? new InetSocketAddress(hostname, myPort) : new InetSocketAddress(myPort));
@@ -43,7 +50,7 @@ public class TcpServer
                         final Socket finalAccept = myServerSocket.accept();
                         registerConnection(finalAccept);
                         final InputStream inputStream = finalAccept.getInputStream();
-                        new Runnable()
+                        exec(new Runnable()
                         {
                             @Override
                             public void run()
@@ -60,7 +67,11 @@ public class TcpServer
                                 }
                                 catch (Exception e)
                                 {
-                                    e.printStackTrace();
+                                    // When the socket is closed by the client,
+                                    // we throw our own SocketException
+                                    // to break the "keep alive" loop above.
+                                    if (!(e instanceof SocketException && "TcpSession Shutdown".equals(e.getMessage())))
+                                        e.printStackTrace();
                                 }
                                 finally
                                 {
@@ -70,7 +81,7 @@ public class TcpServer
                                     unRegisterConnection(finalAccept);
                                 }
                             }
-                        };
+                        });
                     }
                     catch (IOException e)
                     {
@@ -78,32 +89,46 @@ public class TcpServer
                     }
                 } while (!myServerSocket.isClosed());
 
-                System.out.println("myThread Exited");
+                System.out.println("myThread is done");
             }
         });
         myThread.setDaemon(true);
-        myThread.setName("TcpSocket Listener");
-        System.out.println("Starting myThread....");
+        myThread.setName("TcpServer Main Listener");
+
+        logger.info("Starting TcpServer Main Listener");
         myThread.start();
+
+        logger.finer("EXIT");
     }
 
-    
     /**
      * Stop the server.
      */
     public void stop()
     {
-        System.out.println("Server.stop()");
+        logger.finer("ENTRY");
+
         try
         {
             safeClose(myServerSocket);
             closeAllConnections();
             if (myThread != null) myThread.join();
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Exceptiion stopping thread", ex);
         }
+        logger.finer("EXIT");
+    }
+
+    public void exec(Runnable code)
+    {
+        requestCount++;
+        Thread t = new Thread(code);
+        t.setDaemon(true);
+        t.setName("TcpSession #" + requestCount);
+        logger.info("Starting TcpSession #" + requestCount);
+        t.start();
     }
 
     /**
@@ -136,7 +161,7 @@ public class TcpServer
         for (Socket socket : openConnections)
             safeClose(socket);
     }
-    
+
     private static final void safeClose(Closeable closeable)
     {
         if (closeable != null) try
@@ -169,6 +194,5 @@ public class TcpServer
         {
         }
     }
-    
 
 }
