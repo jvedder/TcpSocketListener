@@ -39,6 +39,7 @@ package tcpsocketlistener.logging;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
@@ -50,7 +51,7 @@ import java.util.logging.LogRecord;
  * @author Sascha Brawer (brawer@acm.org)
  */
 public class MySimpleFormatter2 extends Formatter
-{
+{    
     /**
      * Constructs a SimpleFormatter.
      */
@@ -65,7 +66,8 @@ public class MySimpleFormatter2 extends Formatter
      * since it is common that a JVM will instantiate a SimpleFormatter without
      * ever using it.
      */
-    private DateFormat dateFormat;
+    //private DateFormat dateFormat;
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss.SSS");
 
     /**
      * The character sequence that is used to separate lines in the generated
@@ -96,13 +98,19 @@ public class MySimpleFormatter2 extends Formatter
     {
         StringBuffer buf = new StringBuffer(180);
 
-        if (dateFormat == null) dateFormat = DateFormat.getDateTimeInstance();
+        //if (dateFormat == null) dateFormat = DateFormat.getDateTimeInstance();
 
+        
+        buf.append('[');
+        //buf.append(Long.toString(record.getMillis()));
         buf.append(dateFormat.format(new Date(record.getMillis())));
+        buf.append(']');
         buf.append(' ');
         buf.append(record.getSourceClassName());
         buf.append(' ');
         buf.append(record.getSourceMethodName());
+        buf.append(" on Thread ");
+        buf.append(record.getThreadID());
         buf.append(lineSep);
 
         buf.append(record.getLevel());

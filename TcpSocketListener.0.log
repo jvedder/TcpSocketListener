@@ -1,0 +1,102 @@
+[2019-04-29 22:15:09.065] tcpsocketlistener.TcpServer start on Thread 1
+FINER: ENTRY
+ 
+[2019-04-29 22:15:09.069] tcpsocketlistener.TcpServer start on Thread 1
+INFO: Starting TcpServer Main Listener
+ 
+[2019-04-29 22:15:09.073] tcpsocketlistener.TcpServer start on Thread 1
+FINER: EXIT
+ 
+[2019-04-29 22:15:09.073] tcpsocketlistener.TcpServer$1 run on Thread 11
+FINER: ENTRY: myThread.run()
+ 
+[2019-04-29 22:15:09.074] tcpsocketlistener.Main main on Thread 1
+INFO: Server started
+ 
+[2019-04-29 22:15:14.224] tcpsocketlistener.TcpServer$1 run on Thread 11
+INFO: myServerSocket accepted
+ 
+[2019-04-29 22:15:14.230] tcpsocketlistener.TcpServer exec on Thread 11
+INFO: Starting TcpSession #1
+ 
+[2019-04-29 22:15:14.232] tcpsocketlistener.TcpServer$1$1 run on Thread 12
+FINER: ENTRY: Anonymous Runnable Run()
+ 
+[2019-04-29 22:15:14.235] tcpsocketlistener.TcpSession <init> on Thread 12
+FINER: CREATE: TcpSession
+ 
+[2019-04-29 22:15:14.236] tcpsocketlistener.TcpSession execute on Thread 12
+FINER: ENTRY
+ 
+[2019-04-29 22:15:14.236] tcpsocketlistener.TcpSession execute on Thread 12
+INFO: Reading from Socket Stream
+ 
+[2019-04-29 22:15:14.238] tcpsocketlistener.TcpSession execute on Thread 12
+INFO: Read 5 bytes.
+ 
+[2019-04-29 22:15:14.239] tcpsocketlistener.TcpSession execute on Thread 12
+INFO: Reading from Socket Stream
+ 
+[2019-04-29 22:15:14.240] tcpsocketlistener.TcpSession execute on Thread 12
+INFO: TcpSession Shutdown (read == -1)
+ 
+[2019-04-29 22:15:14.241] tcpsocketlistener.TcpSession execute on Thread 12
+INFO: SocketException caught and re-thrown
+ 
+[2019-04-29 22:15:14.241] tcpsocketlistener.TcpSession execute on Thread 12
+FINER: EXIT
+ 
+[2019-04-29 22:15:14.241] tcpsocketlistener.TcpServer$1$1 run on Thread 12
+FINER: EXIT: Anonymous Runnable Run()
+ 
+[2019-04-29 22:15:19.933] tcpsocketlistener.TcpServer$1 run on Thread 11
+INFO: myServerSocket accepted
+ 
+[2019-04-29 22:15:19.937] tcpsocketlistener.TcpServer exec on Thread 11
+INFO: Starting TcpSession #2
+ 
+[2019-04-29 22:15:19.940] tcpsocketlistener.TcpServer$1$1 run on Thread 13
+FINER: ENTRY: Anonymous Runnable Run()
+ 
+[2019-04-29 22:15:19.941] tcpsocketlistener.TcpSession <init> on Thread 13
+FINER: CREATE: TcpSession
+ 
+[2019-04-29 22:15:19.942] tcpsocketlistener.TcpSession execute on Thread 13
+FINER: ENTRY
+ 
+[2019-04-29 22:15:19.942] tcpsocketlistener.TcpSession execute on Thread 13
+INFO: Reading from Socket Stream
+ 
+[2019-04-29 22:15:19.945] tcpsocketlistener.TcpSession execute on Thread 13
+INFO: Read 5 bytes.
+ 
+[2019-04-29 22:15:19.946] tcpsocketlistener.TcpSession execute on Thread 13
+INFO: Reading from Socket Stream
+ 
+[2019-04-29 22:15:19.948] tcpsocketlistener.TcpSession execute on Thread 13
+INFO: TcpSession Shutdown (read == -1)
+ 
+[2019-04-29 22:15:19.949] tcpsocketlistener.TcpSession execute on Thread 13
+INFO: SocketException caught and re-thrown
+ 
+[2019-04-29 22:15:19.949] tcpsocketlistener.TcpSession execute on Thread 13
+FINER: EXIT
+ 
+[2019-04-29 22:15:19.949] tcpsocketlistener.TcpServer$1$1 run on Thread 13
+FINER: EXIT: Anonymous Runnable Run()
+ 
+[2019-04-29 22:15:25.110] tcpsocketlistener.Main main on Thread 1
+INFO: Server stop requested
+ 
+[2019-04-29 22:15:25.113] tcpsocketlistener.TcpServer stop on Thread 1
+FINER: ENTRY
+ 
+[2019-04-29 22:15:25.114] tcpsocketlistener.TcpServer closeAllConnections on Thread 1
+INFO: Closing connections. Number open: 0
+ 
+[2019-04-29 22:15:25.116] tcpsocketlistener.TcpServer$1 run on Thread 11
+FINER: EXIT: myThread.run()
+ 
+[2019-04-29 22:15:25.117] tcpsocketlistener.TcpServer stop on Thread 1
+FINER: EXIT
+ 

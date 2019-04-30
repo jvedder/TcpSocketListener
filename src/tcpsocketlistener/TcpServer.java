@@ -42,12 +42,13 @@ public class TcpServer
             @Override
             public void run()
             {
-                System.out.println("myThread.run()");
+                logger.finer("ENTRY: myThread.run()");
                 do
                 {
                     try
                     {
                         final Socket finalAccept = myServerSocket.accept();
+                        logger.info("myServerSocket accepted");
                         registerConnection(finalAccept);
                         final InputStream inputStream = finalAccept.getInputStream();
                         exec(new Runnable()
@@ -55,11 +56,11 @@ public class TcpServer
                             @Override
                             public void run()
                             {
+                                logger.finer("ENTRY: Anonymous Runnable Run()");
                                 OutputStream outputStream = null;
                                 try
                                 {
-                                    // outputStream =
-                                    // finalAccept.getOutputStream();
+                                    // outputStream = finalAccept.getOutputStream();
                                     TcpSession session = new TcpSession(inputStream, outputStream,
                                             finalAccept.getInetAddress());
                                     while (!finalAccept.isClosed())
@@ -80,6 +81,7 @@ public class TcpServer
                                     safeClose(finalAccept);
                                     unRegisterConnection(finalAccept);
                                 }
+                                logger.finer("EXIT: Anonymous Runnable Run()");
                             }
                         });
                     }
@@ -89,7 +91,8 @@ public class TcpServer
                     }
                 } while (!myServerSocket.isClosed());
 
-                System.out.println("myThread is done");
+                logger.finer("EXIT: myThread.run()");
+                
             }
         });
         myThread.setDaemon(true);
@@ -158,6 +161,8 @@ public class TcpServer
      */
     public synchronized void closeAllConnections()
     {
+        logger.info("Closing connections. Number open: " + openConnections.size());
+
         for (Socket socket : openConnections)
             safeClose(socket);
     }

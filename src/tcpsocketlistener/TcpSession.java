@@ -15,8 +15,9 @@ import java.util.logging.Logger;
 public class TcpSession
 {
     private static final Logger logger = Logger.getLogger(TcpSession.class.getName());
-    public static final int BUFSIZE = 8192;
-    private PushbackInputStream inputStream;
+    public static final int BUFFER_SIZE = 8192;
+    //private PushbackInputStream inputStream;
+    private InputStream inputStream;
     private final OutputStream outputStream;
     private String remoteIp;
     private int rlen;
@@ -24,7 +25,10 @@ public class TcpSession
 
     public TcpSession(InputStream inputStream, OutputStream outputStream, InetAddress inetAddress)
     {
-        this.inputStream = new PushbackInputStream(inputStream, BUFSIZE);
+        logger.finer("CREATE: TcpSession");
+        
+        //this.inputStream = new PushbackInputStream(inputStream, BUFFER_SIZE);
+        this.inputStream = inputStream;
         this.outputStream = outputStream;
         this.remoteIp = inetAddress.isLoopbackAddress() || inetAddress.isAnyLocalAddress() ? "127.0.0.1"
                 : inetAddress.getHostAddress().toString();
@@ -36,12 +40,9 @@ public class TcpSession
 
         try
         {
-            // Read the first 8192 bytes.
-            // The full header should fit in here.
-            // Apache's default header limit is 8KB.
             // Do NOT assume that a single read will get the entire header
             // at once!
-            byte[] buf = new byte[BUFSIZE];
+            byte[] bufffer = new byte[BUFFER_SIZE];
             rlen = 0;
             int read = -1;
             while (true)
@@ -49,7 +50,7 @@ public class TcpSession
                 try
                 {
                     logger.info("Reading from Socket Stream");
-                    read = inputStream.read(buf, 0, BUFSIZE - rlen);
+                    read = inputStream.read(bufffer, 0, BUFFER_SIZE - rlen);
                 }
                 catch (Exception e)
                 {
@@ -69,43 +70,19 @@ public class TcpSession
                     throw new SocketException("TcpSession Shutdown");
                 }
 
-                // rlen += read;
-                // TODO: Check for buf[] full (rlen >= BUFSIZE)
-
                 logger.info("Read " + read + " bytes.");
-                String line = new String(buf, 0, read, StandardCharsets.UTF_8);
+                String line = new String(bufffer, 0, read, StandardCharsets.UTF_8);
                 System.out.println(line);
-
-                // eol = findEndOfLine(buf, rlen);
-                // if (eol > 0)
-                // {
-                // if (eol < rlen) inputStream.unread(buf, eol, rlen - eol);
-                // String line = new String(buf, 0, eol,
-                // StandardCharsets.UTF_8);
-                // System.out.println(line);
-                // rlen = 0;
-                // }
-
             }
 
         }
         catch (SocketException e)
         {
-            logger.warning("SocketException");
+            logger.info("SocketException caught and re-thrown");
             // throw it out to close socket object (finalAccept)
             throw e;
         }
-        // catch (SocketTimeoutException ste)
-        // {
-        //     logger.warning("SocketTimeoutException (unreachable)");
-        //     safeClose(outputStream);        
-        //     throw ste;
-        // }
-        // catch (IOException ioe)
-        // {
-        //     logger.warning("IOException (unreachable)");
-        //     safeClose(outputStream);
-        // }
+
         finally
         {
             logger.finer("EXIT");
